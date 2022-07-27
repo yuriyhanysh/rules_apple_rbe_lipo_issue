@@ -1,0 +1,66 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+### Apple and Swift
+
+http_archive(
+    name = "build_bazel_rules_swift",
+    sha256 = "12057b7aa904467284eee640de5e33853e51d8e31aae50b3fb25d2823d51c6b8",
+    url = "https://github.com/bazelbuild/rules_swift/releases/download/1.0.0/rules_swift.1.0.0.tar.gz",
+)
+
+load(
+    "@build_bazel_rules_swift//swift:repositories.bzl",
+    "swift_rules_dependencies",
+)
+
+swift_rules_dependencies()
+
+load(
+    "@build_bazel_rules_swift//swift:extras.bzl",
+    "swift_rules_extra_dependencies",
+)
+
+swift_rules_extra_dependencies()
+
+http_archive(
+    name = "build_bazel_rules_apple",
+    patch_args = ["-p1"],
+    patches = [
+        # "//tools:patches/bazel/enable_macos_xcframework.patch",  # allow xcframework in for macos
+        # "//tools:patches/bazel/revert_static_xcframework.patch",
+    ],
+    sha256 = "d4c2f715b83b5884e1164fb0e9f3de5b053d77d4436a04510b7940274e91699e",
+    strip_prefix = "rules_apple-8533494fa029f0fc44009c4532c191f349acf193",
+    urls = ["https://github.com/bazelbuild/rules_apple/archive/8533494fa029f0fc44009c4532c191f349acf193.tar.gz"],
+)
+
+load(
+    "@build_bazel_rules_apple//apple:repositories.bzl",
+    "apple_rules_dependencies",
+)
+
+apple_rules_dependencies()
+
+load(
+    "@build_bazel_apple_support//lib:repositories.bzl",
+    "apple_support_dependencies",
+)
+
+apple_support_dependencies()
+
+### BuildBuddy Remote Execution
+
+git_repository(
+    name = "io_buildbuddy_buildbuddy_toolchain",
+    commit = "dc21904a87aa3b2aed3cc45b5e22112f149bbf3f",
+    remote = "https://github.com/yuriyhanysh/buildbuddy-toolchain/",
+)
+
+load("@io_buildbuddy_buildbuddy_toolchain//:deps.bzl", "buildbuddy_deps")
+
+buildbuddy_deps()
+
+load("@io_buildbuddy_buildbuddy_toolchain//:rules.bzl", "buildbuddy")
+
+buildbuddy(name = "buildbuddy_toolchain")

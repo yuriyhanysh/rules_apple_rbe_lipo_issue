@@ -1,0 +1,20 @@
+# BuildBuddy Remote exec
+build:remote --incompatible_enable_cc_toolchain_resolution
+build:remote --bes_results_url=https://app.buildbuddy.io/invocation/
+build:remote --bes_backend=grpcs://remote.buildbuddy.io
+build:remote --remote_cache=grpcs://remote.buildbuddy.io
+build:remote --remote_executor=grpcs://remote.buildbuddy.io
+# build:remote --remote_header=x-buildbuddy-api-key=
+build:remote --remote_timeout=3600
+build:remote --jobs=50
+
+build:remote --host_platform=@buildbuddy_toolchain//:platform
+# build:remote --platforms=@buildbuddy_toolchain//:platform
+build:remote --extra_execution_platforms=@buildbuddy_toolchain//:platform_linux,@buildbuddy_toolchain//:platform_darwin
+build:remote --extra_toolchains=@buildbuddy_toolchain//:cc_toolchain
+build:remote --crosstool_top=@buildbuddy_toolchain//:toolchain
+
+build:remote --define=EXECUTOR=remote
+common:remote --remote_download_outputs=all
+
+try-import user.bazelrc

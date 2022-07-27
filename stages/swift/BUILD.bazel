@@ -1,0 +1,43 @@
+load("@build_bazel_rules_apple//apple:apple.bzl", "apple_static_xcframework")
+load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
+
+module_name = "StandupComedian"
+
+swift_library(
+    name = "lib",
+    srcs = glob(["src/*.swift"]),
+    exec_compatible_with = ["@platforms//os:osx"],
+    module_name = module_name,
+)
+
+apple_static_xcframework(
+        name = "package",
+        ios = {
+            "simulator": [
+                "arm64",
+                "x86_64",
+            ],
+            "device": [
+                "arm64",
+            ],
+        },
+        # macos = {
+        #     "device": [
+        #         "arm64",
+        #         "x86_64",
+        #     ],
+        # },
+        bundle_name = module_name,
+        minimum_deployment_os_versions = {
+            "ios": "13.0",
+            "macos": "10.12",
+        },
+        minimum_os_versions = {
+            "ios": "13.0",
+            "macos": "10.12",
+        },
+        exec_compatible_with = ["@platforms//os:osx"],
+        deps = [
+            ":lib",
+        ],
+    )
